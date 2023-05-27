@@ -46,6 +46,34 @@ app.post("/addemail",async(req,res)=>{
     }
   })
 
+  app.post('/addOtpemail', async (req, res) => {
+
+    const email = req.body.email
+    
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const body = { email,otp }
+    console.log(body)
+    try {
+        const newOtp = new OtpModel(body);
+        console.log(newOtp)
+        await newOtp.save();       
+     
+        await transporter.sendMail({
+            from: 'reeshmasreenath81@gmail.com',
+            to: email,
+            subject: 'OTP Verification',
+            text: `OTP Number is ${otp}`,
+        });
+       
+        res.send(newOtp)
+    } catch (error) {
+        console.error(error);
+        res.status(500);
+    }
+   
+});
+
+
   app.listen(3002,()=>{
     console.log("server started");
 })
